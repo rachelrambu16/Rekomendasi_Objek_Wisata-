@@ -23,6 +23,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        // Membuat akun baru dengan role User
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -30,13 +31,15 @@ class AuthController extends Controller
             'role' => 'user',
         ]);
 
+        // Login otomatis setelah registrasi
         Auth::login($user);
 
         $request->session()->regenerate();
 
-        return redirect('/')->with(
+        // User baru langsung mengisi preferensi
+        return redirect()->route('preferensi.create')->with(
             'success',
-            'Registrasi berhasil! Selamat datang.'
+            'Registrasi berhasil! Silakan pilih preferensi wisata kamu.'
         );
     }
 
@@ -54,12 +57,38 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        // Memeriksa email dan password
         if (Auth::attempt($credentials)) {
+
+            // Memperbarui session setelah login
             $request->session()->regenerate();
 
-            return redirect()->intended('/');
+            $user = Auth::user();
+
+            // Jika akun Admin
+            if ($user->role === 'admin') {
+                return redirect()->route('dashboard')->with(
+                    'success',
+                    'Login Admin berhasil!'
+                );
+            }
+
+            // Jika User belum memiliki preferensi
+            if (!$user->preferensis()->exists()) {
+                return redirect()->route('preferensi.create')->with(
+                    'success',
+                    'Silakan lengkapi preferensi wisata kamu terlebih dahulu.'
+                );
+            }
+
+            // Jika User sudah memiliki preferensi
+            return redirect()->route('dashboard')->with(
+                'success',
+                'Login berhasil! Selamat datang kembali di Jelajah Jogja.'
+            );
         }
 
+        // Jika login gagal
         return back()->withErrors([
             'email' => 'Email atau password yang dimasukkan salah.',
         ])->onlyInput('email');

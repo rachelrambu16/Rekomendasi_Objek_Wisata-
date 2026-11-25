@@ -6,11 +6,13 @@ use App\Models\Wisata;
 
 class HomeController extends Controller
 {
-    // Menampilkan halaman daftar wisata
+    // Menampilkan halaman Jelajah Wisata
     public function jelajahWisata()
     {
-        $wisatas = Wisata::latest()->get();
+        $wisatas = Wisata::with('kategoris')
+            ->latest()
+            ->get();
 
-        return view('wisata.index', compact('wisatas'));
+        return view('jelajah', compact('wisatas'));
     }
 }

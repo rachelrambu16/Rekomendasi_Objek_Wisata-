@@ -26,7 +26,7 @@
 
         <div class="bg-white rounded-[28px] border border-teal-100 shadow-[0_15px_50px_rgba(6,78,73,0.08)] p-7 sm:p-10">
 
-            <!-- Logo dan Beranda -->
+            <!-- Logo  -->
             <div class="flex items-center justify-between mb-10">
 
                 <a href="/" class="flex items-center gap-2.5">
